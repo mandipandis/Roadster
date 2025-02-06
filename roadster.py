@@ -19,7 +19,7 @@ def load_route(route):
     distance_km = data['distance_km']
     speed_kmph = data['speed_kmph']    
     return distance_km, speed_kmph
-
+#hej
 def save_route(route, distance_km, speed_kmph):
     """ 
     Write speed data to route file. Example usage:
