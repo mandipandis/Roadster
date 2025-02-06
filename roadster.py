@@ -33,7 +33,7 @@ def save_route(route, distance_km, speed_kmph):
 #hej
 ### PART 1A ###
 def consumption(v):
-    c = 546.8*v**-1 + 0.2584*v + 0.008210*v**2
+    c = 546.8*v**-1 + 50.31 + 0.2584*v + 0.008210*v**2
 
     return c
 
