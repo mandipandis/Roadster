@@ -1,7 +1,6 @@
 import numpy as np
 from scipy import interpolate
 
-#hejjjjjjjjj
 def load_route(route):
     """ 
     Get speed data from route .npz-file. Example usage:
@@ -20,7 +19,7 @@ def load_route(route):
     distance_km = data['distance_km']
     speed_kmph = data['speed_kmph']    
     return distance_km, speed_kmph
-#hej
+
 def save_route(route, distance_km, speed_kmph):
     """ 
     Write speed data to route file. Example usage:
@@ -31,7 +30,6 @@ def save_route(route, distance_km, speed_kmph):
     """ 
     np.savez(route, distance_km=distance_km, speed_kmph=speed_kmph)
 
-#hejhejhejehjeheje
 ### PART 1A ###
 def consumption(v):
     c = 546.8*v**-1 + 50.31 + 0.2584*v + 0.008210*v**2
