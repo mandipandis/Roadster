@@ -33,7 +33,6 @@ def save_route(route, distance_km, speed_kmph):
 ### PART 1A ###
 def consumption(v):
     c = 546.8*v**-1 + 50.31 + 0.2584*v + 0.008210*v**2
-
     return c
 
 speed_kmph = np.linspace(1., 200., 1000)
@@ -61,7 +60,7 @@ def velocity(x, route):
 def myFunc(x, route):
     return 1/velocity(x,route)
 
-def trapets(func, x0, xn, n, route): #x0- startvärde, xn-slutvärde, n-delintervaller
+#def trapets(func, x0, xn, n, route): #x0- startvärde, xn-slutvärde, n-delintervaller
     h = (xn - x0) / n
     integration = func(x0, route) + func(xn, route)
     for i in range(1, n):
@@ -71,6 +70,13 @@ def trapets(func, x0, xn, n, route): #x0- startvärde, xn-slutvärde, n-delinter
     
     return integration
 
+def trapets(func, x0, xn, n, route):
+    h = (xn - x0) / n  # Steglängd
+    x_values = np.linspace(x0 + h, xn - h, n - 1)  
+    f_values = func(x_values, route)
+    integration = (func(x0, route) + func(xn, route) + 2 * np.sum(f_values)) * (h / 2)
+    
+    return integration
 
 ### PART 2A ###
 def time_to_destination(x, route, n):
@@ -78,30 +84,31 @@ def time_to_destination(x, route, n):
 
 route_anna = 'speed_anna.npz'
 route_elsa = 'speed_elsa.npz'
-n_values = [10, 50, 100, 500, 1000, 5000]
-
 distance_anna, _ = load_route(route_anna)
 distance_elsa, _ = load_route(route_elsa)
 x_max_anna = max(distance_anna)
 x_max_elsa = max(distance_elsa)
-
+n_values = [10, 50, 100, 500, 1000, 5000]
 print("Restid i timmar för olika n-värden:")
 for n in n_values:
     time_anna = time_to_destination(x_max_anna, route_anna, n)
     time_elsa = time_to_destination(x_max_elsa, route_elsa, n)
     print(f"n = {n}: Anna = {time_anna:.2f} h , Elsa = {time_elsa:.2f} h")
 
-
 ### PART 2B ###
-def c(v):
-    return 1 / v
-
-def myOtherFunc(x, route):
-    return c(velocity(x,route))
+def consumptionFunc(s, route):
+    v_s = velocity(s, route)  # Hastighet vid sträcka s
+    return consumption(v_s)
 
 def total_consumption(x, route, n=1000):
     distance_km, _ = load_route(route)
-    return trapets(myOtherFunc, 0, max(distance_km), n, route)
+    return trapets(consumptionFunc, 0, x, n, route)
+
+print("Elförbrukning i Wh för olika n-värden:")
+for n in n_values:
+    E_anna = total_consumption(x_max_anna, 'speed_anna.npz', n)
+    E_elsa = total_consumption(x_max_elsa, 'speed_elsa.npz', n)
+    print(f"n = {n}: Anna = {E_anna:.2f} Wh, Elsa = {E_elsa:.2f} Wh")
 
 ### PART 3A ###
 def distance(T, route): 
