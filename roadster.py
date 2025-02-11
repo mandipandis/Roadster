@@ -58,39 +58,50 @@ def velocity(x, route):
     return v
 
 #funk. i integralen
-def f(x, route):
+def myFunc(x, route):
     return 1/velocity(x,route)
 
-def trapets(x0, xn, n, route): #x0- startvärde, xn-slutvärde, n-delintervaller
+def trapets(func, x0, xn, n, route): #x0- startvärde, xn-slutvärde, n-delintervaller
     h = (xn - x0) / n
-    integration = f(x0, route) + f(xn, route)
+    integration = func(x0, route) + func(xn, route)
     for i in range(1, n):
         k = x0 + i * h
-        integration += 2 * f(k, route)
+        integration += 2 * func(k, route)
     integration *= h / 2
     
     return integration
 
+
 ### PART 2A ###
-def time_to_destination(route, n = 1000):
-    distance_km, speed_kmph = load_route(route)
-    return trapets(0, max(distance_km), n, route)
+def time_to_destination(x, route, n):
+    return trapets(myFunc, 0, x, n, route)
 
 route_anna = 'speed_anna.npz'
 route_elsa = 'speed_elsa.npz'
 n_values = [10, 50, 100, 500, 1000, 5000]
 
+distance_anna, _ = load_route(route_anna)
+distance_elsa, _ = load_route(route_elsa)
+x_max_anna = max(distance_anna)
+x_max_elsa = max(distance_elsa)
+
 print("Restid i timmar för olika n-värden:")
 for n in n_values:
-    time_anna = time_to_destination(route_anna, n)
-    time_elsa = time_to_destination(route_elsa, n)
-    print(f"n={n}: Anna = {time_anna:.2f} h, Elsa = {time_elsa:.2f} h")
+    time_anna = time_to_destination(x_max_anna, route_anna, n)
+    time_elsa = time_to_destination(x_max_elsa, route_elsa, n)
+    print(f"n = {n}: Anna = {time_anna:.2f} h , Elsa = {time_elsa:.2f} h")
 
 
 ### PART 2B ###
-def total_consumption(x, route, n):
-    # REMOVE THE FOLLOWING LINE AND WRITE YOUR SOLUTION
-    raise NotImplementedError('total_consumption not implemented yet!')
+def c(v):
+    return 1 / v
+
+def myOtherFunc(x, route):
+    return c(velocity(x,route))
+
+def total_consumption(x, route, n=1000):
+    distance_km, _ = load_route(route)
+    return trapets(myOtherFunc, 0, max(distance_km), n, route)
 
 ### PART 3A ###
 def distance(T, route): 
