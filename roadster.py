@@ -57,31 +57,33 @@ def velocity(x, route):
     v = interpolate.pchip_interpolate(distance_km, speed_kmph,x)
     return v
 
-
-def trapets (func ,a ,b ,n): #Gör en ny trapets metod denna använder NumPy
-    h = (b - a)/n
-    x = np.linspace(a ,b ,n +1)
-    fx = func(x)
-    T = h *(np.sum (fx) - (fx[0]+ fx[-1])/2)
-    return T
-
-#Funktionen i integralen
-def myFunc(x, route):
+#funk. i integralen
+def f(x, route):
     return 1/velocity(x,route)
 
+def trapets(x0, xn, n, route): #x0- startvärde, xn-slutvärde, n-delintervaller
+    h = (xn - x0) / n
+    integration = f(x0, route) + f(xn, route)
+    for i in range(1, n):
+        k = x0 + i * h
+        integration += 2 * f(k, route)
+    integration *= h / 2
+    
+    return integration
+
 ### PART 2A ###
-def time_to_destination(x, route, n = 1000):
+def time_to_destination(route, n = 1000):
     distance_km, speed_kmph = load_route(route)
-    return trapets(lambda s: myFunc(s, route), 0, max(distance_km), n) #lambda s: gör så att det anropas med ett tal istället för en funk.?
+    return trapets(0, max(distance_km), n, route)
 
 route_anna = 'speed_anna.npz'
 route_elsa = 'speed_elsa.npz'
 n_values = [10, 50, 100, 500, 1000, 5000]
 
-print("Restid i timmar för olika n-värden:") #får just nu fel värden
+print("Restid i timmar för olika n-värden:")
 for n in n_values:
-    time_anna = time_to_destination(max(load_route(route_anna)[0]), route_anna, n)
-    time_elsa = time_to_destination(max(load_route(route_elsa)[0]), route_elsa, n)
+    time_anna = time_to_destination(route_anna, n)
+    time_elsa = time_to_destination(route_elsa, n)
     print(f"n={n}: Anna = {time_anna:.2f} h, Elsa = {time_elsa:.2f} h")
 
 
