@@ -1,5 +1,6 @@
 import numpy as np
 from scipy import interpolate
+from scipy.integrate import quad
 
 def load_route(route):
     """ 
@@ -56,19 +57,10 @@ def velocity(x, route):
     v = interpolate.pchip_interpolate(distance_km, speed_kmph,x)
     return v
 
+### PART 2A ###
 #funk. i integralen
 def myFunc(x, route):
     return 1/velocity(x,route)
-
-#def trapets(func, x0, xn, n, route): #x0- startvärde, xn-slutvärde, n-delintervaller
-    h = (xn - x0) / n
-    integration = func(x0, route) + func(xn, route)
-    for i in range(1, n):
-        k = x0 + i * h
-        integration += 2 * func(k, route)
-    integration *= h / 2
-    
-    return integration
 
 def trapets(func, x0, xn, n, route):
     h = (xn - x0) / n  # Steglängd
@@ -78,7 +70,6 @@ def trapets(func, x0, xn, n, route):
     
     return integration
 
-### PART 2A ###
 def time_to_destination(x, route, n):
     return trapets(myFunc, 0, x, n, route)
 
@@ -112,8 +103,31 @@ for n in n_values:
 
 ### PART 3A ###
 def distance(T, route): 
-    # REMOVE THE FOLLOWING LINE AND WRITE YOUR SOLUTION
-    raise NotImplementedError('distance not implemented yet!')
+    distance_km, _ = load_route(route)
+    v_mean = np.mean(velocity(distance_km, route))
+    x_n = v_mean * T  # Startvärde
+    for i in range(1000):
+        f_x = time_to_destination(x_n, route, 10000000) - T
+        df_x = myFunc(x_n, route)
+        # Newtons metod: x_n+1 = x_n - f(x_n) / f'(x_n)
+        x_next = x_n - f_x / df_x
+
+        # Stanna om skillnaden är liten
+        if np.abs(x_next - x_n) < 10e-10:
+            return x_next
+        
+        x_n = x_next  # Uppdatera x för nästa iteration
+
+    return None  # Om vi inte konvergerar, returnera None    
+    #distance = time_to_destination(T, route, n)
+
+T = 0.5 
+x_anna = distance(T, 'speed_anna.npz')
+x_elsa = distance(T, 'speed_elsa.npz')
+
+print(f"Förväntad sträcka på {T} timmar:")
+print(f"Anna: {x_anna:} km")
+print(f"Elsa: {x_elsa:} km")
 
 ### PART 3B ###
 def reach(C, route):
