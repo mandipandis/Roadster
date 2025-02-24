@@ -109,17 +109,15 @@ def distance(T, route):
     for i in range(1000):
         f_x = time_to_destination(x_n, route, 10000000) - T
         df_x = myFunc(x_n, route)
-        # Newtons metod: x_n+1 = x_n - f(x_n) / f'(x_n)
         x_next = x_n - f_x / df_x
 
-        # Stanna om skillnaden är liten
+        #Kolla om litet värde
         if np.abs(x_next - x_n) < 10e-10:
             return x_next
         
-        x_n = x_next  # Uppdatera x för nästa iteration
+        x_n = x_next
 
-    return None  # Om vi inte konvergerar, returnera None    
-    #distance = time_to_destination(T, route, n)
+    return None 
 
 T = 0.5 
 x_anna = distance(T, 'speed_anna.npz')
