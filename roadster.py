@@ -97,19 +97,19 @@ def total_consumption(x, route, n=1000):
 
 print("Elförbrukning i Wh för olika n-värden:")
 for n in n_values:
-    E_anna = total_consumption(x_max_anna, 'speed_anna.npz', n)
-    E_elsa = total_consumption(x_max_elsa, 'speed_elsa.npz', n)
-    print(f"n = {n}: Anna = {E_anna:.2f} Wh, Elsa = {E_elsa:.2f} Wh")
+    anna = total_consumption(x_max_anna, 'speed_anna.npz', n)
+    elsa = total_consumption(x_max_elsa, 'speed_elsa.npz', n)
+    print(f"n = {n}: Anna = {anna:.2f} Wh, Elsa = {elsa:.2f} Wh")
 
 ### PART 3A ###
 def distance(T, route): 
     distance_km, _ = load_route(route)
     v_mean = np.mean(velocity(distance_km, route))
-    x_n = v_mean * T  # Startvärde
+    x_n = v_mean * T  #Startvärde
     for i in range(1000):
         f_x = time_to_destination(x_n, route, 10000000) - T
         df_x = myFunc(x_n, route)
-        x_next = x_n - f_x / df_x
+        x_next = x_n - f_x / df_x #Newton
 
         #Kolla om litet värde
         if np.abs(x_next - x_n) < 10e-10:
@@ -120,14 +120,36 @@ def distance(T, route):
     return None 
 
 T = 0.5 
-x_anna = distance(T, 'speed_anna.npz')
-x_elsa = distance(T, 'speed_elsa.npz')
+anna = distance(T, 'speed_anna.npz')
+elsa = distance(T, 'speed_elsa.npz')
 
-print(f"Förväntad sträcka på {T} timmar:")
-print(f"Anna: {x_anna:} km")
-print(f"Elsa: {x_elsa:} km")
+print(f"Sträcka efter {T} timmar:")
+print(f"Anna: {anna:} km")
+print(f"Elsa: {elsa:} km")
 
 ### PART 3B ###
 def reach(C, route):
-    # REMOVE THE FOLLOWING LINE AND WRITE YOUR SOLUTION
-    raise NotImplementedError('reach not implemented yet!')
+    distance_km, _ = load_route(route)
+
+    #Startvärde
+    avg_consumption = np.mean(consumptionFunc(distance_km, route))  
+    x = min(C / avg_consumption, max(distance_km))    
+
+    for _ in range(1000):
+        f_x = total_consumption(x, route, 1000000) - C
+        df_x = consumptionFunc(x, route)
+        x_next = x - f_x / df_x #Newton
+        x_next = max(0, min(x_next, max(distance_km)))
+        if np.abs(x_next - x) < 10e-4:
+            return x_next
+        
+        x = x_next 
+    return max(distance_km)
+
+C = 10000
+anna = reach(C, 'speed_anna.npz')
+elsa = reach(C, 'speed_elsa.npz')
+
+print(f"Sträcka med {C} Wh:")
+print(f"Anna: {anna:} km")
+print(f"Elsa: {elsa:} km")
