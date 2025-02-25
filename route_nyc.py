@@ -1,6 +1,7 @@
 from scipy import interpolate
 import numpy as np 
 from pchip_2d import pchip_2d
+import roadster
 
 N_data_t = 25
 data_t = np.linspace(0, 24, N_data_t)
@@ -25,7 +26,46 @@ def route_nyc(t,x):
     """
     return pchip_2d(data_t,data_x,nyc_velocity,t,x)-10
 
+
 ### PART 4A ###
-def nyc_route_traveler_euler(t0,h):
-    # REMOVE THE FOLLOWING LINE AND WRITE YOUR SOLUTION
-    raise NotImplementedError('nyc_route_traveler_euler not implemented yet!')
+
+def nyc_route_traveler_euler(t0, h):
+  t = t0    #starttid
+  x = 0   #begynnelsevillkorl för sträckan 
+  time_h = [t]
+  distance_km = [x]
+  speed_kmph = []
+
+  for e in range(1000):
+    speed = float(route_nyc(t, x).item())  # t och x i denna som skall stegas
+    t = t + h 
+    x = x + h*speed
+    
+    if x > 60:
+      x_exakt = 60
+      t_exakt = t - h + (60 - x)/speed
+      speed = float(route_nyc(t_exakt, x_exakt).item())
+
+      speed_kmph.append(speed)
+      time_h.append(t_exakt)
+      distance_km.append(x_exakt)
+      return np.array(time_h, dtype=float), np.array(distance_km, dtype=float), np.array(speed_kmph, dtype=float)
+    
+    elif t+h > 24:
+      time_h.append(24)
+      distance_km.append(x)
+      speed_kmph.append(speed)
+      return np.array(time_h, dtype=float), np.array(distance_km, dtype=float), np.array(speed_kmph, dtype=float)
+    
+    time_h.append(t)
+    distance_km.append(x)
+    speed_kmph.append(speed)
+    
+  return np.array(time_h, dtype=float), np.array(distance_km, dtype=float), np.array(speed_kmph, dtype=float)
+
+#time_h , distance_km , speed_kmph = nyc_route_traveler_euler(4, 0.1)
+#print(time_h)
+
+time_h , distance_km , speed_kmph = nyc_route_traveler_euler(9.5, 0.1)
+print(time_h)
+
