@@ -49,23 +49,22 @@ def nyc_route_traveler_euler(t0, h):
       speed_kmph.append(speed)
       time_h.append(t_exakt)
       distance_km.append(x_exakt)
-      return np.array(time_h, dtype=float), np.array(distance_km, dtype=float), np.array(speed_kmph, dtype=float)
+      return np.array(time_h), np.array(distance_km), np.array(speed_kmph)
     
     elif t+h > 24:
       time_h.append(24)
       distance_km.append(x)
       speed_kmph.append(speed)
-      return np.array(time_h, dtype=float), np.array(distance_km, dtype=float), np.array(speed_kmph, dtype=float)
+      return np.array(time_h), np.array(distance_km), np.array(speed_kmph)
     
     time_h.append(t)
     distance_km.append(x)
     speed_kmph.append(speed)
     
-  return np.array(time_h, dtype=float), np.array(distance_km, dtype=float), np.array(speed_kmph, dtype=float)
+  return np.array(time_h), np.array(distance_km), np.array(speed_kmph)
 
 #time_h , distance_km , speed_kmph = nyc_route_traveler_euler(4, 0.1)
 #print(time_h)
 
 time_h , distance_km , speed_kmph = nyc_route_traveler_euler(9.5, 0.1)
 print(time_h)
-
