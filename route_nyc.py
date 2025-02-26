@@ -43,8 +43,9 @@ def nyc_route_traveler_euler(t0, h):
     
     if x > 60:
       x_exakt = 60
-      t_exakt = t - h + (60 - x)/speed
+      t_exakt = t  + (60 - x)/speed
       speed = float(route_nyc(t_exakt, x_exakt).item())
+      print(t_exakt)
 
       speed_kmph.append(speed)
       time_h.append(t_exakt)
@@ -66,5 +67,5 @@ def nyc_route_traveler_euler(t0, h):
 #time_h , distance_km , speed_kmph = nyc_route_traveler_euler(4, 0.1)
 #print(time_h)
 
-time_h , distance_km , speed_kmph = nyc_route_traveler_euler(9.5, 0.1)
-print(time_h)
+time_h , distance_km , speed_kmph = nyc_route_traveler_euler(8, 0.5)
+print(speed_kmph)
